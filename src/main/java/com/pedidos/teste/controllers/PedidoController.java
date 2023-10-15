@@ -2,7 +2,6 @@ package com.pedidos.teste.controllers;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pedidos.teste.entities.Pedido;
-import com.pedidos.teste.repositories.PedidoRepository;
 import com.pedidos.teste.service.PedidoService;
 
 @RestController
@@ -28,19 +26,24 @@ public class PedidoController {
 		return pedidoService.findAll();
 	}
 	
-	@GetMapping(value = "/{id}")
+	@GetMapping(value = "/busca/{id}")
 	public Pedido findById(@PathVariable Long id) {
 		return pedidoService.findById(id).get();
 	}
 	
-	@GetMapping(value = "/{data}")
-	public List<Pedido> findByData(@PathVariable String data) {
+	@GetMapping(value = "/data/{data}")
+	public List<Pedido> findByData(@PathVariable LocalDateTime data) {
 		return pedidoService.findByData(data);
 	}
 	
 	@PostMapping
 	public Pedido insert(@RequestBody Pedido pedido) throws Exception {
 		return pedidoService.insert(pedido);
+	}
+	
+	@PostMapping(value = "/salvar-lista")
+	public List<Pedido> insertList(@RequestBody List<Pedido> pedido) throws Exception {
+		return pedidoService.insertList(pedido);
 	}
 
 }

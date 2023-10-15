@@ -1,13 +1,12 @@
 package com.pedidos.teste.service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.pedidos.teste.entities.Pedido;
 import com.pedidos.teste.repositories.PedidoRepository;
@@ -31,7 +30,18 @@ public class PedidoService {
 		return pedidoRepository.save(pedido);
 	}
 
-	public List<Pedido> findByData(String data) {
+	public List<Pedido> insertList(List<Pedido> pedido) throws Exception {
+		List<Pedido> result = new ArrayList();
+		if (pedido.size() <= 10) {
+			result = pedidoRepository.saveAll(pedido);
+		} else {
+			throw new Exception("Apenas podem ser salvos 10 pedidos");
+		}
+		
+		return result;
+	}
+
+	public List<Pedido> findByData(LocalDateTime data) {
 		return pedidoRepository.findByData(data);
 	}
 
@@ -45,16 +55,20 @@ public class PedidoService {
 				pedido.setDataCadastro(LocalDateTime.now());
 			}
 
-			// Validações de descontos
-			if (pedido.getQuantidadeProduto() < 10 && pedido.getQuantidadeProduto() >= 5) {
-				double descontos = (pedido.getValorProduto() * 5) / 100;
-				pedido.setValorProduto(pedido.getValorProduto() - descontos);
-			} else if (pedido.getQuantidadeProduto() >= 10) {
-				double descontos = (pedido.getValorProduto() * 10) / 100;
-				pedido.setValorProduto(pedido.getValorProduto() - descontos);
-			}
+			validaDesconto(pedido);
+
 		} else {
 			throw new Exception("O id informado já existe no banco de dados");
+		}
+	}
+
+	private void validaDesconto(Pedido pedido) {
+		if (pedido.getQuantidadeProduto() < 10 && pedido.getQuantidadeProduto() >= 5) {
+			double descontos = (pedido.getValorProduto() * 5) / 100;
+			pedido.setValorProduto(pedido.getValorProduto() - descontos);
+		} else if (pedido.getQuantidadeProduto() >= 10) {
+			double descontos = (pedido.getValorProduto() * 10) / 100;
+			pedido.setValorProduto(pedido.getValorProduto() - descontos);
 		}
 	}
 

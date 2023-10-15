@@ -12,6 +12,6 @@ import com.pedidos.teste.entities.Pedido;
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 	
 	@Query("from Pedido p where p.dataCadastro = :data")
-	List<Pedido> findByData(@Param("data") String data);
+	List<Pedido> findByData(@Param("data") LocalDateTime data);
 
 }
